@@ -1,0 +1,30 @@
+{
+  "name": "statable-repeat",
+  "version": "0.0.0",
+  "authors": [
+    "Velissel"
+  ],
+  "description": "faster ng repeat properly working with directive implemented with regular javascript",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "faster",
+    "ng-repeat",
+    "state",
+    "consistent",
+    "ng-repeat"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "_lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "latest"
+  }
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Example</title>
+	<script type="text/javascript" src="./../_lib/angular/angular.min.js"></script>
+	<script type="text/javascript" src="./../_src/statable-repeat.js"></script>
+	<script type="text/javascript">
+		(function () {
+			/**
+			* statable.repeat.example Module
+			*
+			* Description
+			*/
+			var m = angular.module('statable.repeat.example', ['statable.repeat']);
+
+			m.controller('exampleCtrl', ['$scope', '$http', function($scope, $http){
+				// $scope.data = [{"wocao": "nima"}];
+				$http.get('./../_data/sports.json').success(function (data) {
+					$scope.data = data.events;
+					console.log($scope.data);
+				}).error(function () {
+					console.error('laoding error');
+				});
+
+				$scope.reverse = function () {
+					$scope.data.pop();
+					// $scope.data = $scope.data.reverse();
+					console.log($scope.data);
+				};
+			}]);
+
+			m.directive('exampleDirective', [function(){
+				// Runs during compile
+				return {
+					// name: '',
+					// priority: 1,
+					// terminal: true,
+					// scope: {}, // {} = isolate, true = child, false/undefined = no change
+					controller: function($scope, $element, $attrs, $transclude, $interval) {
+						$scope.counter = 0;
+						// $interval(function () {
+						// 	$scope.counter++;
+						// }, 1000);
+					},
+					// require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+					// restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+					template: '<div>{{event.eventId}}</div>',
+					// templateUrl: '',
+					// replace: true,
+					// transclude: true,
+					// compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+					link: function($scope, iElm, iAttrs, controller) {
+						// console.log('example directive loaded...');
+					}
+				};
+			}]);
+		})();
+	</script>
+</head>
+<body ng-app='statable.repeat.example'>
+	<div ng-controller="exampleCtrl">
+		<button ng-click="reverse()">reverse</button>
+		<div statable-repeat='data' track-by='eventId' each-as='event' example-directive>
+		</div>
+		<!-- <div statable-repeat='data' track-by='eventId' each-as='wocao'> -->
+			<!-- <div example-directive></div> -->
+		<!-- </div> -->
+		<!-- <div test data='data'></div> -->
+	</div>
+</body>
+</html>
