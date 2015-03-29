@@ -6,7 +6,7 @@
   ],
   "description": "faster ng repeat properly working with directive implemented with regular javascript",
   "moduleType": [
-    "node"
+    "globals"
   ],
   "keywords": [
     "faster",
@@ -22,7 +22,8 @@
     "bower_components",
     "_lib",
     "test",
-    "tests"
+    "tests",
+    "_example"
   ],
   "dependencies": {
     "angular": "latest"
