@@ -16,17 +16,42 @@
 			m.controller('exampleCtrl', ['$scope', '$http', function($scope, $http){
 				// $scope.data = [{"wocao": "nima"}];
 				$http.get('./../_data/sports.json').success(function (data) {
+					data.events.sort(function () {
+						return Math.random() - 0.5;
+					});
+					data.events.splice(10);
 					$scope.data = data.events;
-					console.log($scope.data);
+					// console.log($scope.data);
 				}).error(function () {
-					console.error('laoding error');
+					// console.error('laoding error');
 				});
 
-				$scope.reverse = function () {
+				$scope.pop = function () {
 					$scope.data.pop();
 					// $scope.data = $scope.data.reverse();
-					console.log($scope.data);
+					// console.log($scope.data);
 				};
+				$scope.delete = function () {
+					$scope.data = undefined;
+				};
+				$scope.load = function () {
+					$http.get('./../_data/sports.json').success(function (data) {
+						data.events.sort(function () {
+							return Math.random() - 0.5;
+						});
+						data.events.splice(10);
+						$scope.data = data.events;
+						// console.log($scope.data);
+					}).error(function () {
+						// console.error('laoding error');
+					});
+				};
+				$scope.random = function () {
+					$scope.data.sort(function () {
+						return Math.random() - 0.5;
+					});
+					// console.log($scope.data);
+				}
 			}]);
 
 			m.directive('exampleDirective', [function(){
@@ -35,16 +60,18 @@
 					// name: '',
 					// priority: 1,
 					// terminal: true,
-					// scope: {}, // {} = isolate, true = child, false/undefined = no change
+					scope: {
+						event: "="
+					}, // {} = isolate, true = child, false/undefined = no change
 					controller: function($scope, $element, $attrs, $transclude, $interval) {
 						$scope.counter = 0;
 						// $interval(function () {
-						// 	$scope.counter++;
+						// 	$scope.counter+= Math.round(Math.random());
 						// }, 1000);
 					},
 					// require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
 					// restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-					template: '<div>{{event.eventId}}</div>',
+					template: '<div>{{event.eventId}} {{counter}}</div>',
 					// templateUrl: '',
 					// replace: true,
 					// transclude: true,
@@ -59,13 +86,20 @@
 </head>
 <body ng-app='statable.repeat.example'>
 	<div ng-controller="exampleCtrl">
-		<button ng-click="reverse()">reverse</button>
-		<div statable-repeat='data' track-by='eventId' each-as='event' example-directive>
-		</div>
-		<!-- <div statable-repeat='data' track-by='eventId' each-as='wocao'> -->
-			<!-- <div example-directive></div> -->
+		<button ng-click="pop()">pop</button>
+		<button ng-click="delete()">delete</button>
+		<button ng-click="load()">load</button>
+		<button ng-click="random()">random</button>
+		<!-- <div statable-repeat='data' track-by='eventId' each-as='event' example-directive event='event'> -->
 		<!-- </div> -->
-		<!-- <div test data='data'></div> -->
+		<!-- <hr/> -->
+		<!-- <div statable-repeat='data' track-by='eventId' each-as='event'> -->
+			<!-- <div example-directive event='event'></div> -->
+		<!-- </div> -->
+		<!-- <hr/> -->
+		<div statable-repeat='item in data trackBy eventId' example-directive event='item'>
+			
+		</div>
 	</div>
 </body>
 </html>

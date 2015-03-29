@@ -2,7 +2,14 @@
 	/**
 	* statable.repeat Module
 	*
-	* Description
+	* directive intended used as ng-repeat except that
+	* this directive reorder items inside array instead of
+	* rerender all the items when array/object is changed
+	*
+	* and this directive uses shallow watch instead of deep watch to avoid unnecessary watch is triggerd
+	*
+	* NB: currently key,value map is not implemented yet
+	* NB: $index, $first, $middle, $last, $even, $odd are not implemented yet for simplicity
 	*/
 	var m = angular.module('statable.repeat', []);
 
@@ -13,9 +20,7 @@
 			priority: 1000,
 			terminal: true,
 			scope: true, // {} = isolate, true = child, false/undefined = no change
-			controller: function($scope, $element, $attrs, $transclude) {
-
-			},
+			// controller: function($scope, $element, $attrs, $transclude) {},
 			// require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
 			// restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
 			// template: '',
@@ -25,14 +30,31 @@
 			compile: function(tElement, tAttrs) {
 				tElement.removeAttr('statable-repeat');
 				var html = tElement[0].outerHTML;
-				tElement.remove();
+				tElement.replaceWith("<!--statable-repeat: " + tAttrs.statableRepeat + "-->");
 				return function ($scope, iElm, iAttrs, controller) {
 					// console.log(html);
 					var children = {};
 
-					var _listName = iAttrs.statableRepeat;
-					var _trackBy = iAttrs.trackBy;
-					var _eachAs = iAttrs.eachAs;
+					// map reg: \((.+?), ?(.+?)\) in (.+)
+					// set reg: (.+) in (.+)
+					var _reg_1 = new RegExp();
+					var _map_reg = /\((.+?), ?(.+?)\) in (.+)/;
+					var _set_reg = /(.+?) in (.+?) trackBy (.+)/;
+
+					var _listName;
+					var _trackBy;
+					var _eachAs;
+
+					if (_map_reg.test(iAttrs.statableRepeat)) {
+						throw new Error("map reg is not implemented yet");
+					} else if (_set_reg.test(iAttrs.statableRepeat)) {
+						var _res = _set_reg.exec(iAttrs.statableRepeat);
+						_listName = _res[2];
+						_trackBy = _res[3];
+						_eachAs = _res[1];
+					} else {
+						throw new Error("unknown pattern");
+					};
 
 					$scope.$on('$destroy', function () {
 						for(var k in children) {
@@ -56,44 +78,104 @@
 							return;
 						};
 						if (newList.length > 0) {
+							oldList = angular.copy(oldList);
 							////////////////////////////////////////////////
 							// remove items which are no long in new list //
 							////////////////////////////////////////////////
-							for (var i = 0; i < oldList.length; i++) {
+							for (var i = oldList ? oldList.length - 1 : 0; oldList && i >= 0; i--) {
 								var _oid = oldList[i][_trackBy];
 								var _found = false;
 								for (var n = 0; n < newList.length; n++) {
 									var _nid = newList[n][_trackBy];
-									if (_oid == _nid) {_found = true; break;};
+									if (_oid == _nid) {
+										_found = true;
+										break;
+									};
 								};
 								if (!_found) {
-									children[_oid].scope.$destroy();
-									children[_oid].element.remove();
-									delete children[_oid];
+									oldList.splice(i, 1);
+									children[_oid.toString()].scope.$destroy();
+									children[_oid.toString()].element.remove();
+									delete children[_oid.toString()];
 								};
 							};
 							//////////////////////////////////////
 							// insert or re-order items on page //
 							//////////////////////////////////////
 							var curr = 0;
-							var total = 0;
-							for(var k in children) {
-								total++;
-							}
+							var total = oldList ? oldList.length : 0;
 							for (var i = 0; i < newList.length; i++) {
 								var _item = newList[i];
+
 								if (curr >= total) {
-									var _oid = oldList[total - 1][_trackBy];
 									var _s = $scope.$new();
 									_s[_eachAs] = _item;
 									var _e = $compile(html)(_s);
-									children[_item[_trackBy]] = {
+									children[_item[_trackBy].toString()] = {
 										scope: _s,
 										element: _e
 									};
-									children[_oid].element.after(_e);
-								} else {
 
+									////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+									// if old list is undefined or empty, then there is not element there so that we have to insert it after iElm //
+									////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+									if (oldList && total > 0) {
+										var _oid = oldList[total - 1][_trackBy];
+										children[_oid.toString()].element.parent()[0].insertBefore(_e[0], children[_oid.toString()].element[0]);
+									} else {
+										iElm.parent()[0].insertBefore(_e[0], iElm[0]);
+									}
+								} else {
+									var _nid = _item[_trackBy];
+									var _oid = oldList[curr][_trackBy];
+									if (_nid == _oid) {
+										if (!children[_oid.toString()]) {
+											var _s = $scope.$new();
+											_s[_eachAs] = _item;
+											var _e = $compile(html)(_s);
+											children[_nid.toString()] = {
+												scope: _s,
+												element: _e
+											};
+											
+											iElm.parent()[0].insertBefore(_e[0], iElm[0]);
+										} else {
+											(children[_oid.toString()].scope[_eachAs] != _item) ? (children[_oid.toString()].scope[_eachAs] = _item) : "";
+										}
+										curr++;
+										continue;
+									} else {
+										///////////////////////////////////
+										// look for new item in old list //
+										///////////////////////////////////
+										var _isNew = true;
+										var _index = 0;
+										for (var n = 0; n < oldList.length; n++) {
+											var _oitem = oldList[n];
+											if (_oitem[_trackBy] == _nid) {
+												_isNew = false;
+												_index = n;
+												break;
+											};
+										};
+
+										if (_isNew) {
+											var _s = $scope.$new();
+											_s[_eachAs] = _item;
+											var _e = $compile(html)(_s);
+											children[_nid.toString()] = {
+												scope: _s,
+												element: _e
+											};
+											children[_oid.toString()].element.parent()[0].insertBefore(_e[0], children[_oid.toString()].element[0]);
+										} else {
+											(children[_nid.toString()].scope[_eachAs] != _item) ? (children[_nid.toString()].scope[_eachAs] = _item) : "";
+											children[_oid.toString()].element.parent()[0].insertBefore(children[_nid.toString()].element[0], children[_oid.toString()].element[0]);
+											oldList.splice(_index, 1);
+											total = oldList.length;
+											continue;
+										}
+									}
 								}
 							};
 						} else {
@@ -108,35 +190,12 @@
 						}
 					};
 					$scope.$watchCollection(_listName, function (nv, ov) {
-						if (!nv) {return;};
 						update(nv, ov);
 					});
 				};
 			},
 			// link: function($scope, iElm, iAttrs, controller) {
-			// 	console.log(iElm[0].outerHTML);
-			// 	var children = {};
-			// 	$scope.$on('$destroy', function () {
-			// 		for(var k in children) {
-			// 			children[k].$destory();
-			// 		}
-			// 	});
-			// 	var _listName = iAttrs.statableRepeat;
-			// 	var _trackBy = iAttrs.trackBy;
-			// 	var _eachAs = iAttrs.eachAs;
-			// 	console.log(_listName, _trackBy, _eachAs);
-			// 	// console.log($scope.data);
-			// 	$scope.$watchCollection(_listName, function (nv) {
-			// 		console.log(nv);
-			// 		if (!nv) {return;};
-			// 		var list = $scope.$eval(_listName);
-			// 		for (var i = 0; i < list.length; i++) {
-			// 			var item = list[i];
-			// 			var _c = $scope.$new();
-			// 			_c[_eachAs] = item;
-			// 			children[item[_trackBy]] = _c;
-			// 		};
-			// 	});
+			// 
 			// }
 		};
 	}]);
