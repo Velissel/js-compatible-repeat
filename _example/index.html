@@ -98,11 +98,12 @@
 			<!-- <div example-directive event='event'></div> -->
 		<!-- </div> -->
 		<!-- <hr/> -->
-		<div statable-repeat='item in data trackBy eventId' example-directive event='item'>
-			
+		<div statable-repeat='item in data trackBy eventId'>
+			{{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}
+			<div example-directive event='item'></div>
 		</div>
 		<!-- <div>{{data[0]}}</div> -->
-		<div statable-repeat='(key, value) in data[0]'>{{key}}: {{value}}</div>
+		<div statable-repeat='(key, value) in data[0]'>{{key}}: {{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}</div>
 	</div>
 </body>
 </html>

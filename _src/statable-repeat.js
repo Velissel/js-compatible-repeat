@@ -195,6 +195,21 @@
 								delete children[k];
 							}
 						}
+
+						///////////////////////
+						// update properties //
+						///////////////////////
+						for (var i = 0; newList && i < newList.length; i++) {
+							var _item = newList[i];
+							var _id = _item[_trackBy];
+							var _s = children[_id].scope;
+							_s['$index'] = i;
+							_s['$first'] = i == 0;
+							_s['$last'] = i == (newList.length - 1);
+							_s['$middle'] = (!_s['$first'] && !_s['$last']);
+							_s['$even'] = 0 == (i % 2);
+							_s['$odd'] = 0 != (i % 2);
+						};
 					};
 					function updateMap (newMap, oldMap) {
 						if (!newMap || Object.keys(newMap).length == 0) {
@@ -218,8 +233,8 @@
 									};
 								}
 
-								var newKeys = Object.keys(newMap);
-								var oldKeys = Object.keys(oldMap);
+								var newKeys = Object.keys(newMap).sort();
+								var oldKeys = Object.keys(oldMap).sort();
 								var curr = 0;
 								var total = oldKeys.length;
 								for (var i = 0; i < newKeys.length; i++) {
@@ -264,7 +279,9 @@
 									}
 								};
 							} else {
-								for(var k in newMap) {
+								var newKeys = Object.keys(newMap).sort();
+								for (var i = 0; i < newKeys.length; i++) {
+									var k = newKeys[i];
 									var _s = $scope.$new();
 									_s[_trackBy] = k;
 									_s[_eachAs] = newMap[k];
@@ -274,9 +291,26 @@
 										element: _e
 									};
 									iElm.parent()[0].insertBefore(_e[0], iElm[0]);
-								}
+								};
 							}
 						}
+
+						///////////////////////
+						// update properties //
+						///////////////////////
+						if (newMap) {
+							var newKeys = Object.keys(newMap).sort();
+							for (var i = 0; i < newKeys.length; i++) {
+								var k = newKeys[i];
+								var _s = children[k].scope;
+								_s['$index'] = i;
+								_s['$first'] = i == 0;
+								_s['$last'] = i == (newKeys.length - 1);
+								_s['$middle'] = (!_s['$first'] && !_s['$last']);
+								_s['$even'] = 0 == (i % 2);
+								_s['$odd'] = 0 != (i % 2);
+							};
+						};
 					};
 					$scope.$watchCollection(_listName, function (nv, ov) {
 						switch(type) {
