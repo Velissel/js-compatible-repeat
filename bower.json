@@ -1,10 +1,10 @@
 {
-  "name": "statable-repeat",
-  "version": "0.0.0",
+  "name": "state-repeat",
+  "version": "0.0.1",
   "authors": [
     "Velissel"
   ],
-  "description": "faster ng repeat properly working with directive implemented with regular javascript",
+  "description": "faster alternative to ng-repeat, avoid element redraws/reflows, fully compatible with javascript, jquery or other libraries",
   "moduleType": [
     "globals"
   ],
