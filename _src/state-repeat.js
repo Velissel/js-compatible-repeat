@@ -1,15 +1,15 @@
 (function () {
 	/**
 	* stateRepeat Module
+	* License: MIT
+	* Author: Velissel (william.wenyan@gmail.com)
 	*
-	* directive intended used as ng-repeat except that
-	* this directive reorder items inside array instead of
-	* rerender all the items when array/object is changed
+	* faster alternative to ng-repeat, avoid element redraws/reflows, fully compatible with javascript, jquery or other libraries
 	*
 	* and this directive uses shallow watch instead of deep watch to avoid unnecessary watch is triggerd
 	*
-	* NB: currently key,value map is not implemented yet
-	* NB: $index, $first, $middle, $last, $even, $odd are not implemented yet for simplicity
+	* NB: currently key,value map is now implemented
+	* NB: $index, $first, $middle, $last, $even, $odd are now implemented
 	*/
 	var m = angular.module('stateRepeat', []);
 
