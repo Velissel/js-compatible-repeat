@@ -1,6 +1,6 @@
 (function () {
 	/**
-	* statable.repeat Module
+	* stateRepeat Module
 	*
 	* directive intended used as ng-repeat except that
 	* this directive reorder items inside array instead of
@@ -11,9 +11,9 @@
 	* NB: currently key,value map is not implemented yet
 	* NB: $index, $first, $middle, $last, $even, $odd are not implemented yet for simplicity
 	*/
-	var m = angular.module('statable.repeat', []);
+	var m = angular.module('stateRepeat', []);
 
-	m.directive('statableRepeat', ['$compile', function($compile){
+	m.directive('stateRepeat', ['$compile', function($compile){
 		// Runs during compile
 		return {
 			// name: '',
@@ -28,9 +28,9 @@
 			// replace: true,
 			// transclude: 'element',
 			compile: function(tElement, tAttrs) {
-				tElement.removeAttr('statable-repeat');
+				tElement.removeAttr('state-repeat');
 				var html = tElement[0].outerHTML;
-				tElement.replaceWith("<!--statable-repeat: " + tAttrs.statableRepeat + "-->");
+				tElement.replaceWith("<!--state-repeat: " + tAttrs.stateRepeat + "-->");
 				return function ($scope, iElm, iAttrs, controller) {
 					// console.log(html);
 					var children = {};
@@ -46,15 +46,15 @@
 
 					var type = "unknown";
 
-					if (_map_reg.test(iAttrs.statableRepeat)) {
+					if (_map_reg.test(iAttrs.stateRepeat)) {
 						// throw new Error("map reg is not implemented yet");
-						var _res = _map_reg.exec(iAttrs.statableRepeat);
+						var _res = _map_reg.exec(iAttrs.stateRepeat);
 						_listName = _res[3];
 						_trackBy = _res[1];
 						_eachAs = _res[2];
 						type = "map";
-					} else if (_set_reg.test(iAttrs.statableRepeat)) {
-						var _res = _set_reg.exec(iAttrs.statableRepeat);
+					} else if (_set_reg.test(iAttrs.stateRepeat)) {
+						var _res = _set_reg.exec(iAttrs.stateRepeat);
 						_listName = _res[2];
 						_trackBy = _res[3];
 						_eachAs = _res[1];
@@ -69,7 +69,7 @@
 							children[k].element.remove();
 							delete children[k];
 						}
-						// console.log('statableRepeat destory', _listName, _trackBy, _eachAs);
+						// console.log('stateRepeat destory', _listName, _trackBy, _eachAs);
 					});
 
 					function updateList (newList, oldList) {

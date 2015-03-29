@@ -3,7 +3,7 @@
 <head>
 	<title>Example</title>
 	<script type="text/javascript" src="./../_lib/angular/angular.min.js"></script>
-	<script type="text/javascript" src="./../_src/statable-repeat.js"></script>
+	<script type="text/javascript" src="./../_src/state-repeat.js"></script>
 	<script type="text/javascript">
 		(function () {
 			/**
@@ -11,7 +11,7 @@
 			*
 			* Description
 			*/
-			var m = angular.module('statable.repeat.example', ['statable.repeat']);
+			var m = angular.module('statable.repeat.example', ['stateRepeat']);
 
 			m.controller('exampleCtrl', ['$scope', '$http', function($scope, $http){
 				// $scope.data = [{"wocao": "nima"}];
@@ -98,7 +98,7 @@
 			<!-- <div example-directive event='event'></div> -->
 		<!-- </div> -->
 		<!-- <hr/> -->
-		<div statable-repeat='item in data trackBy eventId'>
+		<div state-repeat='item in data trackBy eventId'>
 			{{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}
 			<div example-directive event='item'></div>
 		</div>
