@@ -10,7 +10,7 @@ Besides, array/object is watched by $scope.$watchCollection instead of deep watc
 ##Usage
 {{}} = changable
 
-1. statable-repeat='{{item}} in {{array}} trackBy {{id}}'
+1. state-repeat='{{item}} in {{array}} trackBy {{id}}'
 
   When used as array iterator, an attribute of object in the list must be explicitly given as the identification for mapping.
 
@@ -18,6 +18,6 @@ Besides, array/object is watched by $scope.$watchCollection instead of deep watc
 
   Track by return value of function is also planned to implement later
   
-2. statable-repeat='({{key}}, {{value}}) in {{object}}'
+2. state-repeat='({{key}}, {{value}}) in {{object}}'
 
   When used as object attributes iterator, it is exactly same as ng-repeat
