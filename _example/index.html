@@ -16,9 +16,9 @@
 			m.controller('exampleCtrl', ['$scope', '$http', function($scope, $http){
 				// $scope.data = [{"wocao": "nima"}];
 				$http.get('./../_data/sports.json').success(function (data) {
-					data.events.sort(function () {
-						return Math.random() - 0.5;
-					});
+					// data.events.sort(function () {
+					// 	return Math.random() - 0.5;
+					// });
 					data.events.splice(10);
 					$scope.data = data.events;
 					console.log($scope.data[0]);
@@ -30,19 +30,19 @@
 					// $scope.data.pop();
 					// $scope.data = $scope.data.reverse();
 					$scope.data.splice(0, 1);
-					console.log($scope.data[0]);
+					// console.log($scope.data[0]);
 				};
 				$scope.delete = function () {
 					$scope.data = undefined;
 				};
 				$scope.load = function () {
 					$http.get('./../_data/sports.json').success(function (data) {
-						data.events.sort(function () {
-							return Math.random() - 0.5;
-						});
+						// data.events.sort(function () {
+						// 	return Math.random() - 0.5;
+						// });
 						data.events.splice(10);
 						$scope.data = data.events;
-						console.log($scope.data[0]);
+						// console.log($scope.data[0]);
 					}).error(function () {
 						// console.error('laoding error');
 					});
@@ -51,7 +51,7 @@
 					$scope.data.sort(function () {
 						return Math.random() - 0.5;
 					});
-					console.log($scope.data[0]);
+					// console.log($scope.data[0]);
 				}
 			}]);
 
@@ -66,9 +66,9 @@
 					}, // {} = isolate, true = child, false/undefined = no change
 					controller: function($scope, $element, $attrs, $transclude, $interval) {
 						$scope.counter = 0;
-						// $interval(function () {
-						// 	$scope.counter+= Math.round(Math.random());
-						// }, 1000);
+						$interval(function () {
+							$scope.counter+= Math.round(Math.random());
+						}, 1000);
 					},
 					// require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
 					// restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
@@ -102,8 +102,15 @@
 			{{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}
 			<div example-directive event='item'></div>
 		</div>
+		<hr/>
+		ngrepeat
+		<hr/>
+		<div ng-repeat='item in data'>
+			{{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}
+			<div example-directive event='item'></div>
+		</div>
 		<!-- <div>{{data[0]}}</div> -->
-		<div statable-repeat='(key, value) in data[0]'>{{key}}: {{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}</div>
+		<!-- <div statable-repeat='(key, value) in data[0]'>{{key}}: {{$index}} {{$first}} {{$last}} {{$middle}} {{$even}} {{$odd}}</div> -->
 	</div>
 </body>
 </html>
