@@ -62,7 +62,7 @@
 							children[k].element.remove();
 							delete children[k];
 						}
-						console.log('statableRepeat destory');
+						// console.log('statableRepeat destory', _listName, _trackBy, _eachAs);
 					});
 
 					function update (newList, oldList) {
