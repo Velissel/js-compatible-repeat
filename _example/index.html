@@ -21,15 +21,16 @@
 					});
 					data.events.splice(10);
 					$scope.data = data.events;
-					// console.log($scope.data);
+					console.log($scope.data[0]);
 				}).error(function () {
 					// console.error('laoding error');
 				});
 
 				$scope.pop = function () {
-					$scope.data.pop();
+					// $scope.data.pop();
 					// $scope.data = $scope.data.reverse();
-					// console.log($scope.data);
+					$scope.data.splice(0, 1);
+					console.log($scope.data[0]);
 				};
 				$scope.delete = function () {
 					$scope.data = undefined;
@@ -41,7 +42,7 @@
 						});
 						data.events.splice(10);
 						$scope.data = data.events;
-						// console.log($scope.data);
+						console.log($scope.data[0]);
 					}).error(function () {
 						// console.error('laoding error');
 					});
@@ -50,7 +51,7 @@
 					$scope.data.sort(function () {
 						return Math.random() - 0.5;
 					});
-					// console.log($scope.data);
+					console.log($scope.data[0]);
 				}
 			}]);
 
@@ -100,6 +101,8 @@
 		<div statable-repeat='item in data trackBy eventId' example-directive event='item'>
 			
 		</div>
+		<!-- <div>{{data[0]}}</div> -->
+		<div statable-repeat='(key, value) in data[0]'>{{key}}: {{value}}</div>
 	</div>
 </body>
 </html>

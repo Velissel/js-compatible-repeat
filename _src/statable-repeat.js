@@ -37,7 +37,6 @@
 
 					// map reg: \((.+?), ?(.+?)\) in (.+)
 					// set reg: (.+) in (.+)
-					var _reg_1 = new RegExp();
 					var _map_reg = /\((.+?), ?(.+?)\) in (.+)/;
 					var _set_reg = /(.+?) in (.+?) trackBy (.+)/;
 
@@ -45,13 +44,21 @@
 					var _trackBy;
 					var _eachAs;
 
+					var type = "unknown";
+
 					if (_map_reg.test(iAttrs.statableRepeat)) {
-						throw new Error("map reg is not implemented yet");
+						// throw new Error("map reg is not implemented yet");
+						var _res = _map_reg.exec(iAttrs.statableRepeat);
+						_listName = _res[3];
+						_trackBy = _res[1];
+						_eachAs = _res[2];
+						type = "map";
 					} else if (_set_reg.test(iAttrs.statableRepeat)) {
 						var _res = _set_reg.exec(iAttrs.statableRepeat);
 						_listName = _res[2];
 						_trackBy = _res[3];
 						_eachAs = _res[1];
+						type = "list";
 					} else {
 						throw new Error("unknown pattern");
 					};
@@ -65,7 +72,7 @@
 						// console.log('statableRepeat destory', _listName, _trackBy, _eachAs);
 					});
 
-					function update (newList, oldList) {
+					function updateList (newList, oldList) {
 						if (!newList) {
 							/////////////////////////////////////////////////
 							// if new list is undefined, remove everything //
@@ -189,8 +196,99 @@
 							}
 						}
 					};
+					function updateMap (newMap, oldMap) {
+						if (!newMap || Object.keys(newMap).length == 0) {
+							for(var k in children) {
+								children[k].scope.$destroy();
+								children[k].element.remove();
+								delete children[k];
+							}
+						} else {
+							if (oldMap) {
+								oldMap = angular.copy(oldMap);
+								/////////////////////////////////////////////
+								// look for attributes no longer in object //
+								/////////////////////////////////////////////
+								for(var k in oldMap) {
+									if (!newMap[k]) {
+										children[k].scope.$destroy();
+										children[k].element.remove();
+										delete children[k];
+										delete oldMap[k];
+									};
+								}
+
+								var newKeys = Object.keys(newMap);
+								var oldKeys = Object.keys(oldMap);
+								var curr = 0;
+								var total = oldKeys.length;
+								for (var i = 0; i < newKeys.length; i++) {
+									var _nk = newKeys[i];	/*new key*/
+									if (curr >= total) {
+
+									} else {
+										var _ok = oldKeys[curr];	/*old key*/
+										if (_nk == _ok) {
+											if (!children[_ok]) {
+												var _s = $scope.$new();
+												_s[_trackBy] = _nk;
+												_s[_eachAs] = newMap[_nk];
+												var _e = $compile(html)(_s);
+												children[_nk] = {
+													scope: _s,
+													element: _e
+												};
+												iElm.parent()[0].insertBefore(_e[0], iElm[0]);
+											} else {
+												newMap[_nk] != oldMap[_ok] ? children[_nk].scope[_eachAs] = newMap[_nk] : "";
+											};
+											curr++;
+										} else {
+											if (!oldMap[_nk]) {
+												var _s = $scope.$new();
+												_s[_trackBy] = _nk;
+												_s[_eachAs] = newMap[_nk];
+												var _e = $compile(html)(_s);
+												children[_nk] = {
+													scope: _s,
+													element: _e
+												};
+												children[_ok].element.parent()[0].insertBefore(_e[0], children[_ok].element[0]);
+											} else {
+												newMap[_nk] != oldMap[_ok] ? children[_nk].scope[_eachAs] = newMap[_nk] : "";
+												children[_ok].element.parent()[0].insertBefore(children[_nk].element[0], children[_ok].element[0]);
+												oldKeys.splice(_index, 1);
+												total = oldKeys.length;
+											};
+										};
+									}
+								};
+							} else {
+								for(var k in newMap) {
+									var _s = $scope.$new();
+									_s[_trackBy] = k;
+									_s[_eachAs] = newMap[k];
+									var _e = $compile(html)(_s);
+									children[k] = {
+										scope: _s,
+										element: _e
+									};
+									iElm.parent()[0].insertBefore(_e[0], iElm[0]);
+								}
+							}
+						}
+					};
 					$scope.$watchCollection(_listName, function (nv, ov) {
-						update(nv, ov);
+						switch(type) {
+							case "map":
+							updateMap(nv, ov);
+							break;
+							case "list":
+							updateList(nv, ov);
+							break;
+							default:
+							throw new Error("unknown type");
+						}
 					});
 				};
 			},
